@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use App\Models\FreeTrialUsage;
+use App\Models\Tracker;
 
 class HomeController extends Controller
 {
@@ -17,6 +18,21 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $ip = request()->ip();
+        $today = now()->toDateString(); // YYYY-MM-DD format
+
+        // Log only one entry per IP per day
+        Tracker::firstOrCreate(
+            [
+                'ip_address' => $ip,
+                'date' => $today
+            ],
+            [
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url()
+            ]
+        );
+
         return Inertia::render('Welcome');
     }
 

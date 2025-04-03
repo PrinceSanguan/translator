@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { router, usePage } from '@inertiajs/react';
-import { Users } from 'lucide-react';
+import { Calendar, Eye, Users } from 'lucide-react';
 
 interface PageProps {
     auth: {
@@ -10,12 +10,19 @@ interface PageProps {
         };
     };
     users: any[];
+    analytics: {
+        dailyVisits: number;
+        monthlyVisits: number;
+        topPages: { url: string; count: number }[];
+        dailyUniqueVisitors: number;
+        monthlyUniqueVisitors: number;
+    };
 }
 
-export default function AdminDashboard({ users }: { users: any[] }) {
+export default function AdminDashboard({ users, analytics }: { users: any[]; analytics: PageProps['analytics'] }) {
     const { auth } = usePage().props as PageProps;
 
-    // Percentage calculation logic
+    // User percentage calculation logic
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
 
@@ -51,7 +58,100 @@ export default function AdminDashboard({ users }: { users: any[] }) {
                 </header>
 
                 <main className="flex-1 overflow-y-auto p-4 md:p-6">
-                    <div className="mx-auto max-w-4xl">
+                    <div className="mx-auto max-w-6xl">
+                        {/* Analytics Dashboard Section */}
+                        <div className="mb-8">
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Dashboard Analytics</h1>
+                            <p className="mt-2 text-gray-500 dark:text-gray-400">Website traffic and user engagement metrics</p>
+
+                            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                {/* Daily Visits Card */}
+                                <Card>
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                        <CardTitle className="text-sm font-medium">Daily Visits</CardTitle>
+                                        <Eye size={16} className="text-gray-500 dark:text-gray-400" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{analytics.dailyVisits}</div>
+                                        <p className="text-xs text-gray-500">Page views today</p>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Monthly Visits Card */}
+                                <Card>
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                        <CardTitle className="text-sm font-medium">Monthly Visits</CardTitle>
+                                        <Calendar size={16} className="text-gray-500 dark:text-gray-400" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{analytics.monthlyVisits}</div>
+                                        <p className="text-xs text-gray-500">Total views this month</p>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Daily Unique Visitors */}
+                                <Card>
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                        <CardTitle className="text-sm font-medium">Daily Unique Visitors</CardTitle>
+                                        <Users size={16} className="text-gray-500 dark:text-gray-400" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{analytics.dailyUniqueVisitors}</div>
+                                        <p className="text-xs text-gray-500">Unique visitors today</p>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Monthly Unique Visitors */}
+                                <Card>
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                        <CardTitle className="text-sm font-medium">Monthly Unique Visitors</CardTitle>
+                                        <Users size={16} className="text-gray-500 dark:text-gray-400" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{analytics.monthlyUniqueVisitors}</div>
+                                        <p className="text-xs text-gray-500">Unique visitors this month</p>
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            {/* Top Pages Section */}
+                            <div className="mt-6">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Most Visited Pages</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full min-w-[600px]">
+                                                <thead className="border-b">
+                                                    <tr>
+                                                        <th className="p-4 text-left">URL</th>
+                                                        <th className="p-4 text-right">Visits</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {analytics.topPages.map((page, index) => (
+                                                        <tr key={index} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                            <td className="p-4 text-sm font-medium">{page.url}</td>
+                                                            <td className="p-4 text-right">{page.count}</td>
+                                                        </tr>
+                                                    ))}
+                                                    {analytics.topPages.length === 0 && (
+                                                        <tr>
+                                                            <td colSpan={2} className="p-4 text-center text-gray-500">
+                                                                No data available
+                                                            </td>
+                                                        </tr>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </div>
+
+                        {/* User Management Section */}
                         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                             <div>
                                 <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">User Management</h1>
