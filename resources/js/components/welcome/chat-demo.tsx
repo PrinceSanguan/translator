@@ -10,13 +10,43 @@ const ChatDemo = () => {
     const [inputValue, setInputValue] = useState('');
     const [isTranslating, setIsTranslating] = useState(false);
     const [translationCount, setTranslationCount] = useState(0);
+    const [isExceedingLimit, setIsExceedingLimit] = useState(false);
 
     // New state for tracking if user needs to register
     const [shouldShowRegistration, setShouldShowRegistration] = useState(false);
 
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const chatContainerRef = useRef<HTMLDivElement>(null);
+    const messagesEndRef = useRef(null);
+    const chatContainerRef = useRef(null);
     const shouldScrollRef = useRef(false); // Control whether to scroll or not
+
+    // Function to check if input exceeds character limit
+    const checkCharacterLimit = (text) => {
+        return text.length <= 100;
+    };
+
+    // Check character limit whenever input changes
+    useEffect(() => {
+        if (inputValue.length > 100) {
+            setIsExceedingLimit(true);
+
+            // Only add warning message if it doesn't exist already
+            const hasWarningMessage = messages.some((msg) => msg.sender === 'bot' && msg.text.includes('Input cannot exceed 100 characters'));
+
+            if (!hasWarningMessage) {
+                setMessages((prev) => [
+                    ...prev,
+                    {
+                        id: Date.now(),
+                        text: 'Input cannot exceed 100 characters to prevent token abuse.',
+                        sender: 'bot',
+                    },
+                ]);
+                shouldScrollRef.current = true;
+            }
+        } else {
+            setIsExceedingLimit(false);
+        }
+    }, [inputValue]);
 
     // Modified scroll effect that only scrolls when we explicitly want it to
     useEffect(() => {
@@ -52,20 +82,30 @@ const ChatDemo = () => {
         console.log('Mic button clicked');
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleInputChange = (e) => {
+        const newValue = e.target.value;
+        // Only update the input value if we're not exceeding the limit
+        // or if the new value is shorter (allowing users to delete text)
+        if (checkCharacterLimit(newValue) || newValue.length < inputValue.length) {
+            setInputValue(newValue);
+        }
+    };
+
+    const handleSubmit = async (e) => {
         // Completely prevent any default behaviors
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
 
-        if (!inputValue.trim()) return;
+        if (!inputValue.trim() || isExceedingLimit) return;
 
         // Add user message
         const userMessage = { id: Date.now(), text: inputValue, sender: 'user' };
         setMessages((prev) => [...prev, userMessage]);
         setInputValue('');
         setIsTranslating(true);
+        shouldScrollRef.current = true;
 
         try {
             // Make API request to the backend translation endpoint
@@ -80,6 +120,7 @@ const ChatDemo = () => {
                     sender: 'bot',
                 },
             ]);
+            shouldScrollRef.current = true;
 
             // Increment translation count
             setTranslationCount((prev) => prev + 1);
@@ -98,6 +139,7 @@ const ChatDemo = () => {
                             sender: 'bot',
                         },
                     ]);
+                    shouldScrollRef.current = true;
                 }, 1000);
             }
         } catch (error) {
@@ -112,9 +154,9 @@ const ChatDemo = () => {
                     sender: 'bot',
                 },
             ]);
+            shouldScrollRef.current = true;
 
             // Dispatch an event to notify the error occurred
-            // This is the only new code added to your component
             const errorEvent = new CustomEvent('translationError');
             window.dispatchEvent(errorEvent);
         } finally {
@@ -162,14 +204,16 @@ const ChatDemo = () => {
                     <input
                         type="text"
                         value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
+                        onChange={handleInputChange}
                         placeholder="Type in Filipino (try 'Kumusta' or 'Salamat')"
                         disabled={shouldShowRegistration}
-                        className="flex-1 rounded-l-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className={`flex-1 rounded-l-md border px-3 py-2 focus:outline-none ${
+                            isExceedingLimit ? 'border-red-500 bg-red-100 text-white' : 'border-gray-300 focus:ring-2 focus:ring-blue-500'
+                        }`}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();
-                                if (inputValue.trim() && !isTranslating && !shouldShowRegistration) {
+                                if (inputValue.trim() && !isTranslating && !shouldShowRegistration && !isExceedingLimit) {
                                     handleSubmit(e);
                                 }
                             }
@@ -180,7 +224,7 @@ const ChatDemo = () => {
                         type="button"
                         onClick={handleSubmit}
                         className="rounded-l-none"
-                        disabled={!inputValue.trim() || isTranslating || shouldShowRegistration}
+                        disabled={!inputValue.trim() || isTranslating || shouldShowRegistration || isExceedingLimit}
                     >
                         <Send className="h-5 w-5" />
                     </Button>

@@ -42,4 +42,4 @@
 
 <p>Your application should now be running. Open your browser and navigate to <code>http://127.0.0.1:8000/</code> to access it.</p>
 
-cd /home/doublebi/public_html/laravel/
+cd /home/freesit2/translator.psanguan.com/laravel/
