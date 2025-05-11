@@ -10,7 +10,7 @@ class Tracker extends Model
 {
     protected $fillable = [
         'ip_address',
-        'date',          // New field
+        'date',
         'user_agent',
         'url'
     ];

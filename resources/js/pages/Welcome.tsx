@@ -299,7 +299,8 @@ export default function Welcome() {
                                     <h3 className="text-lg font-medium text-white">For Businesses</h3>
                                 </div>
                                 <p className="text-slate-300">
-                                    Create professional emails and documents. Improve communication with international clients and partners.
+                                    Create professional emails and documents make it fix. Improve communication with international clients and
+                                    partners.
                                 </p>
                             </div>
 
