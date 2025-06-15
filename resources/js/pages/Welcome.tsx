@@ -176,7 +176,7 @@ export default function Welcome() {
 
                             <div className="mb-8 max-w-xl">
                                 <p className="text-xl text-slate-300 md:text-2xl">
-                                    Hindi na mahirap ang pagsasalin ng Tagalog sa English! Try our advanced AI translator and break the language
+                                    Hindi na mahirap ang pagsasalin ng Tagalog sa English!! Try our advanced AI translator and break the language
                                     barrier instantly.
                                 </p>
 
