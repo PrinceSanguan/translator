@@ -1,4 +1,4 @@
-import Sidebar from '@/components/user/sidebar';
+import Sidebar from '@/components/user/Sidebar';
 import { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 
