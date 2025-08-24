@@ -167,7 +167,7 @@ export default function Welcome() {
                         <div ref={heroContentRef} className="hidden md:block md:w-1/2 md:text-left">
                             {/* Floating badge */}
                             <div className="mb-6 inline-block origin-left animate-pulse rounded-full border border-cyan-500/20 bg-indigo-500/10 px-4 py-1 text-sm font-medium text-cyan-400 backdrop-blur-sm">
-                                Pinakabagong AI Translation Technology 🇵🇭
+                                Pinakabagong AI Translation Technology sa bansa 🇵🇭
                             </div>
 
                             <h1 className="mb-6 bg-gradient-to-r from-white via-cyan-300 to-violet-300 bg-clip-text text-4xl leading-tight font-bold text-transparent md:text-5xl lg:text-6xl">
